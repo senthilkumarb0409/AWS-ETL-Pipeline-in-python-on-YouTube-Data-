@@ -6,6 +6,8 @@ Welcome to the **AWS-ETL-Pipeline-in-python-on-YouTube-Data** project! This pipe
 2. **Transforming** the data into CSV, JSON, and Excel formats.
 3. **Uploading** the transformed data to an AWS S3 bucket.
 
+->to watch the video walkthrough :[CLICK HERE!!](https://youtu.be/uoCJSXlmyIY)
+
 ---
 
 ## 🛠️ Prerequisites
