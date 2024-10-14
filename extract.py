@@ -6,7 +6,7 @@ from googleapiclient.errors import HttpError
 import isodate
 
 
-api_key = "AIzaSyAYAQ0nFjYdovNMylXuLc5QzYsxtut1leA" # here replace with your api key
+api_key = "AIzaSyBB_Z45vNaEIGWMOLh4hI43MFyaaRsRf1U" # Replace with your API key
 youtube = build("youtube", "v3", developerKey=api_key)
 
 
@@ -14,29 +14,37 @@ def get_video_ids_from_channel(channel_id):
     video_ids = []
     next_page_token = None
 
-    while True:
-        try:
-            request = youtube.search().list(
-                part="id",
-                channelId=channel_id,
+    try:
+        # Get the channel's upload playlist
+        request = youtube.channels().list(
+            part="contentDetails",
+            id=channel_id
+        )
+        response = request.execute()
+
+        # Get the upload playlist ID
+        playlist_id = response['items'][0]['contentDetails']['relatedPlaylists']['uploads']
+
+        # Fetch videos from the playlist
+        while True:
+            playlist_request = youtube.playlistItems().list(
+                part="snippet",
+                playlistId=playlist_id,
                 maxResults=50,
                 pageToken=next_page_token
             )
-            response = request.execute()
+            playlist_response = playlist_request.execute()
 
-            
-            for item in response['items']:
-                if item['id']['kind'] == 'youtube#video':
-                    video_ids.append(item['id']['videoId'])
+            # Collect video IDs from the playlist
+            for item in playlist_response['items']:
+                video_ids.append(item['snippet']['resourceId']['videoId'])
 
-            
-            next_page_token = response.get('nextPageToken')
+            next_page_token = playlist_response.get('nextPageToken')
             if not next_page_token:
                 break
 
-        except HttpError as err:
-            print(f"An error occurred: {err}")
-            break
+    except HttpError as err:
+        print(f"An error occurred: {err}")
 
     return video_ids
 
@@ -45,7 +53,7 @@ def get_video_details(video_ids):
     video_details = []
 
     for i in range(0, len(video_ids), 50):
-        batch_video_ids = video_ids[i:i+50]
+        batch_video_ids = video_ids[i:i + 50]
         try:
             request = youtube.videos().list(
                 part="snippet,statistics,contentDetails",
@@ -53,7 +61,6 @@ def get_video_details(video_ids):
             )
             response = request.execute()
 
-            
             for item in response['items']:
                 video_info = {
                     'title': item['snippet']['title'],
@@ -64,7 +71,6 @@ def get_video_details(video_ids):
                     'duration': item['contentDetails']['duration'],
                 }
 
-                
                 video_info['duration_seconds'] = isodate.parse_duration(video_info['duration']).total_seconds()
 
                 video_details.append(video_info)
@@ -88,10 +94,9 @@ def display_video_details(video_details):
 
 
 def save_to_csv(video_details, filename="video_details.csv"):
-    headers = ['title', 'video_id', 'views', 'likes', 'dislikes', 'duration_seconds', 'duration']  
+    headers = ['title', 'video_id', 'views', 'likes', 'dislikes', 'duration_seconds', 'duration']
 
     try:
-        
         script_dir = os.path.dirname(os.path.abspath(__file__))
         file_path = os.path.join(script_dir, filename)
 
@@ -106,7 +111,6 @@ def save_to_csv(video_details, filename="video_details.csv"):
 
 def save_to_json(video_details, filename="video_details.json"):
     try:
-        
         script_dir = os.path.dirname(os.path.abspath(__file__))
         file_path = os.path.join(script_dir, filename)
 
@@ -127,5 +131,6 @@ def main(channel_id):
     save_to_csv(video_details)
     save_to_json(video_details)
 
-channel_id = "UCh9nVJoWXmFb7sLApWGcLPQ" # give the channel id of the youtube channel you want to analyse or extract data 
+
+channel_id = "UCnjU1FHmao9YNfPzE039YTw"  # Replace with the desired YouTube channel ID
 main(channel_id)
