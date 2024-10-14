@@ -10,6 +10,66 @@ Welcome to the **AWS-ETL-Pipeline-in-python-on-YouTube-Data** project! This pipe
 
 ---
 
+
+Step 1 : Extraction of youtube data :
+
+    1.  -> create a project in google cloud console for API integration to extract  youtube data
+    
+      ->click the API & services 
+      
+                      -> click credentials and click create credentials
+
+                      -> API key will be generated (copy the key)
+                      
+                      ->Inorder to extract the youtube data through this api key
+                      
+                                    -> goto API library : search youtube data api v3 
+                                    
+                                    ->click ENABLE
+    
+     2. ->write the python code for extracting the needed data using youtube api and save it in the json format (extract.py)
+     
+                      -> In the api key section of code : paste the copied api key.
+                      
+                      -> In the channel id section of code: paste the channel id from which ur going to collect the data
+                      
+                      -> Run the extract.py code . 
+
+Step 2 : Transforming the youtube data :
+
+     ->write the python code for transforming the collected data from extraxtion process according to ur use cases / requirements, clean the data,in different format you need(transform.py)
+     
+                      ->Run the transform.py code.
+
+Step 3 : Loading of youtube data  :
+
+      -> write the python code for storing the data in the aws s3 or rds or dynamo db for later use for aanalying the data using analytics tools for business or other purposes.(load.py)
+      
+           ->in order for the code to run and correctly load the data into the aws 
+           
+                   ->configure the file that helps the boto3 package to establish connection between ur code and aws s3
+                   
+                            ->the file should be in the format: .aws/credentials
+                            
+                                      -> in side the credentials file:
+                                      
+                                               ->Format:
+                                                              [default]
+                                                              aws_access_key_id = "your aws access key from iam security credentials section"
+                                                              aws_secret_access_key = "your aws secret key from iam security credentials section"
+                                                              region = eu-north-1
+                                                              
+                                                ->the file should be located in :users/ur usr name/.aws/credentials
+                                                
+             -> create a empty bucket in the s3 and copy the name.
+             
+                      ->paste the name of the bucket in the code section where the bucket name is needed
+                      
+             ->Run the Load.py code.
+
+the xlsx file will be successfully uploaded in the bucket in the name u mentioned in  the code.
+
+
 ## 🛠️ Prerequisites
 
 Before you begin, ensure you have the following installed and configured:
